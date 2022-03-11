@@ -116,7 +116,7 @@ $mainTitle = "Zadanie2 Admin";
                 $searchText = $_GET["search"];
             else $searchText = "";
 
-            $glossaryEntries = getGlossary($db, $searchText);
+            $glossaryEntries = readGlossary($db, $searchText);
             foreach ($glossaryEntries as $row) {
                 $eid = $row["eid"];
                 $sid = $row["sid"];

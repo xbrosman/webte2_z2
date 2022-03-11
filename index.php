@@ -72,7 +72,7 @@ else $searchText = "";
                 </thead>
                 <tbody>
                     <?php
-                    $glossaryEntries = getGlossary($db, $searchText);
+                    $glossaryEntries = readGlossary($db, $searchText);
                     foreach ($glossaryEntries as $row) {
                         echo sprintf(
                             "<tr>
