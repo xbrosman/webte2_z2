@@ -1,4 +1,5 @@
 <?php
+require_once("config.php");
 
 
 function getAllLangueges($db)
@@ -16,15 +17,19 @@ function langueges2Option($db)
  * Function gets all glossaries entries from databese and could filter just searched text.
  * @return: Associative array of glossaries exprestions from database.
  */
-function getGlossary($db, $searchText)
+function readGlossary($db, $searchText)
 {
     $noSearchQuery = "SELECT een.id AS eid,een.expression AS pojem_en,een.definition AS def_en, esk.id AS sid,esk.expression AS pojem_sk ,esk.definition AS def_sk
     FROM translations as t 
     LEFT JOIN expressions as een ON t.expression_en = een.id 
-    LEFT JOIN expressions as esk ON t.expression_sk = esk.id\n";
+    LEFT JOIN expressions as esk ON t.expression_sk = esk.id";
 
     if (isset($searchText) && $searchText !== "") {
-        $searchQuery = $noSearchQuery+"WHERE een.expression LIKE '%$searchText%' OR esk.expression LIKE '%$searchText%'  OR een.definition LIKE '%$searchText%' OR esk.definition LIKE '%$searchText%'";
+        $searchQuery = "SELECT een.id AS eid,een.expression AS pojem_en,een.definition AS def_en, esk.id AS sid,esk.expression AS pojem_sk ,esk.definition AS def_sk
+        FROM translations as t 
+        LEFT JOIN expressions as een ON t.expression_en = een.id 
+        LEFT JOIN expressions as esk ON t.expression_sk = esk.id
+        WHERE een.expression LIKE '%$searchText%' OR esk.expression LIKE '%$searchText%'  OR een.definition LIKE '%$searchText%' OR esk.definition LIKE '%$searchText%'";
         $result = $db->query($searchQuery);
     } else
         $result = $db->query($noSearchQuery);
