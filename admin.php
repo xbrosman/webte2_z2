@@ -118,21 +118,24 @@ $mainTitle = "Zadanie2 Admin";
 
             $glossaryEntries = getGlossary($db, $searchText);
             foreach ($glossaryEntries as $row) {
+                $eid = $row["eid"];
+                $sid = $row["sid"];
                 echo sprintf(
                     "<tr>
                             <td><p>%s</p></td>
                             <td><p>%s</p></td>
                             <td><p>%s</p></td>
                             <td><p>%s</p></td>
-                            <td><a href='delete.php?id=%d'>delete</a>/<a href='update.php?id=%d'>update</a></td>
+                            <td><a href='delete.php?eid=%d&sid=%d'>delete</a><br><br><a href='update.php?id=%d'>update</a></td>
                             </tr>",
                     $row["pojem_en"],
                     $row["def_en"],
                     $row["pojem_sk"],
                     $row["def_sk"],
-                    $row["id"],
-                    $row["id"]
-                );
+                    $eid,
+                    $sid,
+                    $eid
+                );                
             }
             ?>
         </tbody>
