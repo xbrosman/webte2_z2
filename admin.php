@@ -42,36 +42,23 @@ $mainTitle = "Zadanie2 Admin";
         <section class="core">
             <h2>Admin</h2>
 
-            <form action="create.php" method="get">
+            <form action="create.php" method="post">
                 <div class="add container">
                     <div class="formitem">
-                        <label for="">Pridaj pojem:</label>
-                        <input type="text" name="" id="">
+                        <label for="">Pridaj pojem en:</label>
+                        <input type="text" name="expression_en" id="exp_en" required>
 
-                        <label for="">Pridaj Definíciu:</label>
-                        <input type="text" name="" id="">
-
-                        <label for="">Pridaj jazyk:</label>
-                        <select id="lang" name="lang">
-                            <?php
-                            langueges2Option($db);
-                            ?>
-                        </select>
+                        <label for="def_en">Pridaj Definíciu en:</label>
+                        <input type="text" name="def_en" id="def_en" required>
+                        
                     </div>
 
                     <div class="formitem">
-                        <label for="">Pridaj preklad pojem:</label>
-                        <input type="text" name="" id="">
+                        <label for="exp_sk">Pridaj preklad pojem:</label>
+                        <input type="text" name="expression_sk" id="exp_sk" required>
 
-                        <label for="">Pridaj preklad Definíciu:</label>
-                        <input type="text" name="" id="">
-
-                        <label for="">Pridaj jazyk:</label>
-                        <select id="lang" name="lang">
-                            <?php
-                            langueges2Option($db);
-                            ?>
-                        </select>
+                        <label for="def_sk">Pridaj preklad Definíciu:</label>
+                        <input type="text" name="def_sk" id="def_sk" required>                       
                     </div>
 
                     <div class="formitem"></div>

@@ -54,8 +54,9 @@ function errorFormated($e)
  *  $data[2] => pojem_sk 
  *  $data[3] => def_sk
  */
-function createGlossaryRecord($db, $data,$jazyky)
+function createGlossaryRecord($db, $data)
 {
+    $jazyky = readLanguages($db);
     $id_sk = $jazyky[0]['id'];
     $id_en = $jazyky[1]['id'];
 
@@ -86,14 +87,19 @@ function createGlossaryRecord($db, $data,$jazyky)
 
 function createAllFromCSV($db, $file)
 {
-    $result = $db->query(("SELECT * FROM languages"));
-    $jazyky = $result->fetch_all(MYSQLI_ASSOC);   
     while (($data = fgetcsv($file, 1000, ";")) !== FALSE) {
         try {
-            createGlossaryRecord($db, $data,$jazyky);
+            createGlossaryRecord($db, $data);
         } catch (Exception $e) {
             errorFormated($e);
             continue;
         }
     }
+}
+
+
+function readLanguages($db)
+{
+    $result = $db->query(("SELECT * FROM languages"));
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
