@@ -101,7 +101,7 @@ $mainTitle = "Zadanie2 Admin";
                     <td><p>%s</p></td>
                     <td><p>%s</p></td>
                     <td><p>%s</p></td>
-                    <td><a href='delete.php?eid=%d&sid=%d'>delete</a><br><br><a href='update.php?id=%d'>update</a></td>
+                    <td><a href='delete.php?eid=%d&sid=%d'>delete</a><br><br><a href='updateView.php?enid=%d&skid=%d'>update</a></td>
                     </tr>",
                             $row["pojem_en"],
                             $row["def_en"],
@@ -109,7 +109,8 @@ $mainTitle = "Zadanie2 Admin";
                             $row["def_sk"],
                             $eid,
                             $sid,
-                            $eid
+                            $eid,
+                            $sid
                         );
                     }
                     ?>

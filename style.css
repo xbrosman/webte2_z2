@@ -127,6 +127,11 @@ nav li a:hover:not(.active){
   box-sizing: border-box;  
 }
 
+.formitem textarea{
+  width:100%;
+  max-width: 100%;
+}
+
 .formitem input[type=date]{
   padding: 10px 20px;
 }

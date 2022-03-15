@@ -7,7 +7,7 @@ require_once("functions.php");
 
 $db = new mysqli();
 $db->connect($hostname, $username, $pass, $database);
-$mainTitle = "Zadanie2";
+
 
 $searchText="";
 if (isset($_GET["search"]))

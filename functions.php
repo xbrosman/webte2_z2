@@ -1,15 +1,18 @@
 <?php
-require_once("config.php");
 
+use LDAP\Result;
+
+require_once("config.php");
+$mainTitle = "Zadanie2";
 
 function getAllLangueges($db)
 {
     return $db->query("SELECT * FROM languages;")->fetch_all(MYSQLI_ASSOC);
 }
 
-function langueges2Option($db)
+function langueges2Option($db, $langs)
 {
-    foreach (getAllLangueges($db) as $option)
+    foreach ($langs as $option)
         echo sprintf("<option value='%d'>%s</option>", $option["id"], ($option["code"] . " " . $option["name"]));
 }
 
@@ -37,13 +40,59 @@ function readGlossary($db, $searchText)
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+function readExpression($db, $id)
+{
+    $searchQuery = "SELECT een.id AS eid,een.expression AS pojem_en,een.definition AS def_en, esk.id AS sid,esk.expression AS pojem_sk ,esk.definition AS def_sk
+    FROM translations as t 
+    LEFT JOIN expressions as een ON t.expression_en = een.id 
+    LEFT JOIN expressions as esk ON t.expression_sk = esk.id
+    WHERE een.id=?
+    ";
+
+    $stmt = $db->prepare($searchQuery);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function updateExpression($db, $data, $id)
+{
+    try {
+        $stmt = $db->prepare("SELECT esk.id AS sid
+            FROM translations as t 
+            LEFT JOIN expressions as een ON t.expression_en = een.id 
+            LEFT JOIN expressions as esk ON t.expression_sk = esk.id
+            WHERE een.id=?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_row();
+        $skid = $result[0];
+
+        $stmt = $db->prepare("UPDATE expressions
+            SET expression = '$data[0]', definition = '$data[1]'
+            WHERE id=?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+
+        $stmt = $db->prepare("UPDATE expressions
+            SET expression = '$data[2]', definition = '$data[3]'
+            WHERE id=?");
+        $stmt->bind_param("i", $skid);
+        $stmt->execute();
+
+    } catch (Exception $e) {
+        errorFormated($e);
+    }
+}
+
 function errorFormated($e)
 {
     echo "<pre>";
     echo 'Message: ' . $e->getMessage();
     echo "</pre>";
     echo "<pre>";
-    echo '.....entry not created';
     echo "</pre>";
 }
 
