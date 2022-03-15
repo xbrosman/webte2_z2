@@ -88,59 +88,48 @@ $mainTitle = "Zadanie2 Admin";
                     <input type="submit" value="Submit" name="submit">
                 </div>
             </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Pojem (en)</th>
+                        <th>Definicia (en)</th>
+                        <th>Pojem (sk)</th>
+                        <th>Definicia (sk)</th>
+                        <th>Oparation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (isset($_GET["search"]))
+                        $searchText = $_GET["search"];
+                    else $searchText = "";
 
-
-            <form action="index.php" method="get">
-                <div class="search container">
-                    <div class="formitem">
-                        <input type="text" name="searchField" id="searchField">
-                    </div>
-                    <div class="formitem">
-                        <input type="submit" value="Hľadaj">
-                    </div>
-            </form>
+                    $glossaryEntries = readGlossary($db, $searchText);
+                    foreach ($glossaryEntries as $row) {
+                        $eid = $row["eid"];
+                        $sid = $row["sid"];
+                        echo sprintf(
+                            "<tr>
+                    <td><p>%s</p></td>
+                    <td><p>%s</p></td>
+                    <td><p>%s</p></td>
+                    <td><p>%s</p></td>
+                    <td><a href='delete.php?eid=%d&sid=%d'>delete</a><br><br><a href='update.php?id=%d'>update</a></td>
+                    </tr>",
+                            $row["pojem_en"],
+                            $row["def_en"],
+                            $row["pojem_sk"],
+                            $row["def_sk"],
+                            $eid,
+                            $sid,
+                            $eid
+                        );
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </section>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Pojem (en)</th>
-                <th>Definicia (en)</th>
-                <th>Pojem (sk)</th>
-                <th>Definicia (sk)</th>
-                <th>Oparation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if (isset($_GET["search"]))
-                $searchText = $_GET["search"];
-            else $searchText = "";
-
-            $glossaryEntries = readGlossary($db, $searchText);
-            foreach ($glossaryEntries as $row) {
-                $eid = $row["eid"];
-                $sid = $row["sid"];
-                echo sprintf(
-                    "<tr>
-                            <td><p>%s</p></td>
-                            <td><p>%s</p></td>
-                            <td><p>%s</p></td>
-                            <td><p>%s</p></td>
-                            <td><a href='delete.php?eid=%d&sid=%d'>delete</a><br><br><a href='update.php?id=%d'>update</a></td>
-                            </tr>",
-                    $row["pojem_en"],
-                    $row["def_en"],
-                    $row["pojem_sk"],
-                    $row["def_sk"],
-                    $eid,
-                    $sid,
-                    $eid
-                );                
-            }
-            ?>
-        </tbody>
-    </table>
-    </section>
     <footer class="footer">
         Author: Filip Brosman
     </footer>
@@ -149,8 +138,8 @@ $mainTitle = "Zadanie2 Admin";
 </html>
 
 <!-- SELECT een.id,een.expression,een.definition, esk.id,esk.expression ,esk.definition 
-    FROM translations as t 
-    LEFT JOIN expressions as een ON t.expression_en = een.id 
-    LEFT JOIN expressions as esk ON t.expression_sk = esk.id; -->
+FROM translations as t 
+LEFT JOIN expressions as een ON t.expression_en = een.id 
+LEFT JOIN expressions as esk ON t.expression_sk = esk.id; -->
 
 <?php $db->close(); ?>
