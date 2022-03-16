@@ -9,10 +9,29 @@ $db = new mysqli();
 $db->connect($hostname, $username, $pass, $database);
 
 
-$searchText="";
+$searchText = "";
 if (isset($_GET["search"]))
     $searchText = $_GET["search"];
 else $searchText = "";
+
+
+// searchLang=1&isFullText=on&isTranslated=on&search=
+
+if (isset($_GET["searchLang"]))
+    $searchLang = $_GET["searchLang"];
+else
+    $searchLang = 1;
+
+if (isset($_GET["isFullText"]))
+    $isFullText = $_GET["isFullText"];
+else
+    $isFullText = null;
+
+if (isset($_GET["isTranslated"]))
+    $isTranslated = $_GET["isTranslated"];
+else
+    $isTranslated = null;
+
 
 ?>
 
@@ -47,46 +66,69 @@ else $searchText = "";
         <section class="core">
             <h2>Používateľ</h2>
 
-            <div class="content">
-                <form action="index.php" method="get">
-                    <div class="search container">
-                        <div class="formitem">
-                            <input type="text" name="search" id="search" value="<?php echo $searchText; ?>">
-                        </div>
-
-                        <div class="formitem">
-                            <input type="submit" value="Hľadaj">
-                        </div>
+            <form action="index.php" method="get">
+                <div class="search container">
+                    <div class="formitem">
+                        <select name="searchLang" id="searchLang">
+                            <?php languages2Option($db, getAllLangueges($db), $searchLang); ?>
+                        </select>
                     </div>
-                </form>
+                    <div class="formitem">
+                        <input type="checkbox" name="isFullText" id="isFullText" <?php echo ($isFullText != null) ?  "checked" :  "";  ?>> <label for="">FullTextové hľadanie</label>
+                        <br>
+                        <br>
+                        <input type="checkbox" name="isTranslated" id="isTranslated" <?php echo ($isTranslated != null) ?  "checked" :  ""; ?>> <label for="">Zobraziť preklad</label>
+                    </div>
 
-            </div>
+                    <div class="formitem">
+                        <input type="text" name="search" id="search" value="<?php echo $searchText; ?>">
+                    </div>
+
+                    <div class="formitem">
+                        <input type="submit" value="Hľadaj">
+                    </div>
+                </div>
+            </form>
+
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Pojem (en)</th>
-                        <th>Definicia (en)</th>
-                        <th>Pojem (sk)</th>
-                        <th>Definicia (sk)</th>
+                        <th>Pojem</th>
+                        <th>Definicia</th>
+                        <?php if ($isTranslated != null)
+                            echo  "<th>Pojem (preklad)</th>
+                        <th>Definicia (preklad)</th>";
+                        ?>
+
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $glossaryEntries = readGlossary($db, $searchText);
-                    foreach ($glossaryEntries as $row) {
-                        echo sprintf(
-                            "<tr>
+                    $glossaryEntries = readGlossaryParameters($db, $searchText, $searchLang, $isTranslated, $isFullText);
+                    if ($isTranslated == null)
+                            foreach ($glossaryEntries as $row) {
+                                echo sprintf(
+                                    "<tr><td><p>%s</p></td><td><p>%s</p></td></tr>",
+                                    $row["pojem"],
+                                    $row["def"],
+                                );
+                            }                           
+                    else
+                        foreach ($glossaryEntries as $row) {
+                            echo sprintf(
+                                "<tr>
                             <td><p>%s</p></td>
                             <td><p>%s</p></td>
                             <td><p>%s</p></td>
                             <td><p>%s</p></td>
                             </tr>",
-                            $row["pojem_en"],
-                            $row["def_en"],
-                            $row["pojem_sk"],
-                            $row["def_sk"]
-                        );
-                    }
+                                $row["pojem"],
+                                $row["def"],
+                                $row["pojem_translated"],
+                                $row["def_translated"]
+                            );
+                        }
+
                     ?>
                 </tbody>
             </table>

@@ -10,32 +10,76 @@ function getAllLangueges($db)
     return $db->query("SELECT * FROM languages;")->fetch_all(MYSQLI_ASSOC);
 }
 
-function langueges2Option($db, $langs)
+function languages2Option($db, $langs, $preSet)
 {
-    foreach ($langs as $option)
-        echo sprintf("<option value='%d'>%s</option>", $option["id"], ($option["code"] . " " . $option["name"]));
+    foreach ($langs as $option){
+
+        if ($option["id"] == $preSet)
+            echo sprintf("<option value='%d' selected>%s</option>", $option["id"], ($option["code"] . " " . $option["name"]));
+        else
+            echo sprintf("<option value='%d'>%s</option>", $option["id"], ($option["code"] . " " . $option["name"]));
+    }
 }
 
 /**
  * Function gets all glossaries entries from databese and could filter just searched text.
  * @return: Associative array of glossaries exprestions from database.
  */
-function readGlossary($db, $searchText)
+function readGlossary($db)
 {
     $noSearchQuery = "SELECT een.id AS eid,een.expression AS pojem_en,een.definition AS def_en, esk.id AS sid,esk.expression AS pojem_sk ,esk.definition AS def_sk
     FROM translations as t 
     LEFT JOIN expressions as een ON t.expression_en = een.id 
     LEFT JOIN expressions as esk ON t.expression_sk = esk.id";
+    $result = $db->query($noSearchQuery);
 
-    if (isset($searchText) && $searchText !== "") {
-        $searchQuery = "SELECT een.id AS eid,een.expression AS pojem_en,een.definition AS def_en, esk.id AS sid,esk.expression AS pojem_sk ,esk.definition AS def_sk
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+/*
+ $searchQuery = "SELECT een.id AS eid,een.expression AS pojem_en,een.definition AS def_en, esk.id AS sid,esk.expression AS pojem_sk ,esk.definition AS def_sk
         FROM translations as t 
         LEFT JOIN expressions as een ON t.expression_en = een.id 
         LEFT JOIN expressions as esk ON t.expression_sk = esk.id
-        WHERE een.expression LIKE '%$searchText%' OR esk.expression LIKE '%$searchText%'  OR een.definition LIKE '%$searchText%' OR esk.definition LIKE '%$searchText%'";
-        $result = $db->query($searchQuery);
-    } else
-        $result = $db->query($noSearchQuery);
+        WHERE een.expression LIKE '%$searchText%' OR esk.expression LIKE '%$searchText%'  OR een.definition LIKE '%$searchText%' OR esk.definition LIKE '%$searchText%'";§
+
+
+        $row["pojem"],
+        $row["def"],
+        $row["pojem_translated"],
+        $row["def_translated"]
+*/
+
+function readGlossaryParameters($db, $searchText, $lang, $isTranslated, $isFullText)
+{
+    $baseSql = "SELECT 
+    e.expression AS pojem,
+    e.definition AS def
+    FROM expressions as e 
+    WHERE e.expression LIKE '%$searchText%' AND e.lang_id = $lang";
+
+    $translatedSearch = "SELECT 
+    e.expression AS pojem,
+    e.definition AS def,
+    et.expression AS pojem_translated,
+    et.definition AS def_translated
+    FROM translations as t 
+    LEFT JOIN expressions as e ON t.expression_en = e.id 
+    LEFT JOIN expressions as et ON t.expression_sk = et.id
+    WHERE e.expression LIKE '%$searchText%' OR et.expression LIKE '%$searchText%'
+    ";
+
+    $sqlQuery = $baseSql;
+
+    if ($isTranslated != null)  
+        $sqlQuery = $translatedSearch;
+    
+    $fullTextSearch = " OR e.definition LIKE '%$searchText%'";
+    if ($isFullText != null)
+        $sqlQuery = $sqlQuery.$fullTextSearch;
+
+
+    $result = $db->query($sqlQuery);
 
     return $result->fetch_all(MYSQLI_ASSOC);
 }
@@ -81,7 +125,6 @@ function updateExpression($db, $data, $id)
             WHERE id=?");
         $stmt->bind_param("i", $skid);
         $stmt->execute();
-
     } catch (Exception $e) {
         errorFormated($e);
     }
