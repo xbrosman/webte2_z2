@@ -42,6 +42,7 @@ $mainTitle = "Zadanie2 Admin";
         <section class="core">
             <h2>Admin</h2>
 
+            <h3>Pridanie nového pojmu:</h3>
             <form action="create.php" method="post">
                 <div class="add container">
                     <div class="formitem">
@@ -50,7 +51,7 @@ $mainTitle = "Zadanie2 Admin";
 
                         <label for="def_en">Pridaj Definíciu en:</label>
                         <input type="text" name="def_en" id="def_en" required>
-                        
+
                     </div>
 
                     <div class="formitem">
@@ -58,7 +59,7 @@ $mainTitle = "Zadanie2 Admin";
                         <input type="text" name="expression_sk" id="exp_sk" required>
 
                         <label for="def_sk">Pridaj preklad Definíciu:</label>
-                        <input type="text" name="def_sk" id="def_sk" required>                       
+                        <input type="text" name="def_sk" id="def_sk" required>
                     </div>
 
                     <div class="formitem"></div>
@@ -69,10 +70,11 @@ $mainTitle = "Zadanie2 Admin";
                 </div>
             </form>
 
+            <h3>Pridanie CSV súboru:</h3>
             <form action="uploadCSV.php" method="post" enctype="multipart/form-data">
-                <div class="uploadCSV container">
+                <div class="container">
                     <input type="file" name="csv_data" id="csv_data">
-                    <input type="submit" value="Submit" name="submit">
+                    <input type="submit" value="Nahrať" name="submit">
                 </div>
             </form>
             <table class="table">
