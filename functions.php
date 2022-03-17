@@ -58,6 +58,12 @@ function readGlossaryParameters($db, $searchText, $lang, $isTranslated, $isFullT
     FROM expressions as e 
     WHERE e.expression LIKE '%$searchText%' AND e.lang_id = $lang";
 
+    $fullTextSearch = "SELECT 
+    e.expression AS pojem,
+    e.definition AS def
+    FROM expressions as e 
+    WHERE (e.expression LIKE '%$searchText%' OR e.definition LIKE '%$searchText%') AND e.lang_id = $lang";
+
     $translatedSearch = "SELECT 
     e.expression AS pojem,
     e.definition AS def,
@@ -69,16 +75,43 @@ function readGlossaryParameters($db, $searchText, $lang, $isTranslated, $isFullT
     WHERE e.expression LIKE '%$searchText%' OR et.expression LIKE '%$searchText%'
     ";
 
+    $fullTextTranslatedEN = "SELECT 
+    e.expression AS pojem,
+    e.definition AS def,
+    et.expression AS pojem_translated,
+    et.definition AS def_translated
+    FROM translations as t 
+    JOIN expressions as e ON t.expression_en = e.id 
+    JOIN expressions as et ON t.expression_sk = et.id
+    WHERE (e.expression LIKE '%$searchText%' OR e.definition LIKE '%$searchText%') AND e.lang_id = $lang
+    ";
+
+    $fullTextTranslatedSK = "SELECT 
+    e.expression AS pojem,
+    e.definition AS def,
+    et.expression AS pojem_translated,
+    et.definition AS def_translated
+    FROM translations as t 
+    JOIN expressions as e ON t.expression_sk = e.id 
+    JOIN expressions as et ON t.expression_en = et.id
+    WHERE (e.expression LIKE '%$searchText%' OR e.definition LIKE '%$searchText%') AND e.lang_id = $lang
+    ";
+
     $sqlQuery = $baseSql;
 
     if ($isTranslated != null)  
         $sqlQuery = $translatedSearch;
     
-    $fullTextSearch = " OR e.definition LIKE '%$searchText%'";
     if ($isFullText != null)
-        $sqlQuery = $sqlQuery.$fullTextSearch;
+        $sqlQuery = $fullTextSearch;  
+        
+    if ($isFullText != null && $isTranslated != null)
+        if ($lang ==1)
+            $sqlQuery = $fullTextTranslatedSK;  
+        else
+            $sqlQuery = $fullTextTranslatedEN;  
 
-
+    echo $sqlQuery;
     $result = $db->query($sqlQuery);
 
     return $result->fetch_all(MYSQLI_ASSOC);
