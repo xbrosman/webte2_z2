@@ -111,7 +111,6 @@ function readGlossaryParameters($db, $searchText, $lang, $isTranslated, $isFullT
         else
             $sqlQuery = $fullTextTranslatedEN;  
 
-    echo $sqlQuery;
     $result = $db->query($sqlQuery);
 
     return $result->fetch_all(MYSQLI_ASSOC);
